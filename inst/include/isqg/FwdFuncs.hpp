@@ -67,9 +67,11 @@ Population dh(int, isqg::seamless::Trap<Specimen>) ;
 
 // --Externals--
 
+MPtr       standard_meiosis(void) ;
+
 Codes      gamete_ctor(int, isqg::seamless::Trap<Specie>) ;
 
-Specie     specie_std_ctor(Maps, Names, Spots, Map, Spots, Spots, Spots) ;
+// Specie     specie_std_ctor(Maps, Names, Spots, Map, Spots, Spots, Spots) ;
 
 Specie     specie_cus_ctor(Maps, Names, Spots, Map, Spots, Spots, Spots, MPtr) ;
 

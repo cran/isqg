@@ -41,11 +41,12 @@
 # define _QUANTGENETICS_HPP_
 
 # include <isqg/FwdDefs.hpp>
+# include <isqg/FwdFuncs.hpp>
 
 class Chromosome {
 
   // polymorphic meiosis:
-  friend class Standard ;
+  // friend class Standard ;
   friend class Extended ;
 
   friend class DNA ;  
@@ -56,7 +57,6 @@ public:
   
   // constructors
   Chromosome(void) { } // needs default !
-  Chromosome(Map) ; // R interface
   Chromosome(Map, MPtr) ;
   
   // meiosis intra chromosome
@@ -80,20 +80,6 @@ public:
   virtual Map meiosis(const double &, const double &) = 0 ; // pure abstract :)
 
 } ; // Meiosis
-
-class Standard : public Meiosis {
-
-public:
-
-  Standard(void) { } ;
-
-  Map meiosis(const double &, const double &) ; // standard specialization
-
-private:
-
-  Map process(const double &, const double &) ; // count location
-
-} ; // Standard
 
 class Extended : public Meiosis {
 
@@ -168,7 +154,6 @@ class Genome {
 
 public:
 
-  Genome(Maps, Names, Spots, Map, Spots, Spots, Spots) ;       // standard
   Genome(Maps, Names, Spots, Map, Spots, Spots, Spots, MPtr) ; // extended
   Genome(const Genome &) ;                                     // copy constructor
 
@@ -180,7 +165,6 @@ public:
 
 private:
 
-  Chip parser_std(Maps) ;
   Chip parser_cus(Maps, MPtr) ;
     
   Chip    ensemble ; // would be public
@@ -192,13 +176,12 @@ class Specie {
 
 public:
 
-  Specie(Maps, Names, Spots, Map, Spots, Spots, Spots) ;
   Specie(Maps, Names, Spots, Map, Spots, Spots, Spots, MPtr) ;
   
   Codes gamete(int) ;
  
   // Position search(Code snp) { return slot->directory.search(snp) ; } 
-  Codes    split(Code seq)  { return slot->directory.split(seq) ; }
+  Codes split(Code seq)  { return slot->directory.split(seq) ; }
 
   GPtr  slot ;
     

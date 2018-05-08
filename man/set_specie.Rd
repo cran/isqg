@@ -24,26 +24,39 @@ data(ToyMap)
 spc_standard <- set_specie(ToyMap)
 
 ## generate standard _de novo_ variability
-spc_standard$gamete(n = 10)
+spc_standard$gamete(n = 100)
 
-## Writing your own meiosis process and using it
 \dontrun{
-src <- '
-// [[Rcpp::depends(isqg)]]
+## writing your own meiosis process and using it
+Meiosis <- '
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::depends(BH, isqg)]] 
+# include <isqg.h> // loading headers of the package
 
-# include <isqg.h>
+// half w/ crossing at position 1.0
+Map meiosis(const double & i, const double & j) {
 
-Map meiosis(double i, double j) { return Map(1, R::runif(0.0, 1.0) > .5 ? 1 : 0) ; }
+  if (static_cast<bool>(R::rbinom(1.0, 0.5))) {
+    return Map() ;
+  } else {
+    return Map(1, 1.0) ;
+  }
 
+}
+
+// wrap the function as external pointer
 // [[Rcpp::export]]
-MPtr myMeiosis() { return MPtr(new FPtr(& meiosis), true) ; }
+MPtr myMeiosis() { return MPtr(new FPtrM(& meiosis), true) ; }
 '
 
-Rcpp::sourceCpp(code = src, rebuild = TRUE)
-spc_custom <- set_specie(ToyMap, meiosis = myMeiosis())
+## compile the code
+Rcpp::sourceCpp(code = Meiosis, rebuild = TRUE)
 
-## generate custom _de novo_ variability
-scp_custom$gamete(n = 10)
+## define a specie w/ custom meiosis
+spp_custom <- set_specie(ToyMap, meiosis = myMeiosis())
+
+## check meiosis process
+spp_custom$gamete(n = 100)
 }
 
 }

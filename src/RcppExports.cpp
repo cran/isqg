@@ -6,6 +6,16 @@
 
 using namespace Rcpp;
 
+// standard_meiosis
+MPtr standard_meiosis();
+RcppExport SEXP _isqg_standard_meiosis() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(standard_meiosis());
+    return rcpp_result_gen;
+END_RCPP
+}
 // gamete_ctor
 Codes gamete_ctor(int number, isqg::seamless::Trap<Specie> spc);
 RcppExport SEXP _isqg_gamete_ctor(SEXP numberSEXP, SEXP spcSEXP) {
@@ -15,23 +25,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type number(numberSEXP);
     Rcpp::traits::input_parameter< isqg::seamless::Trap<Specie> >::type spc(spcSEXP);
     rcpp_result_gen = Rcpp::wrap(gamete_ctor(number, spc));
-    return rcpp_result_gen;
-END_RCPP
-}
-// specie_std_ctor
-Specie specie_std_ctor(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr);
-RcppExport SEXP _isqg_specie_std_ctor(SEXP inputSEXP, SEXP snpsSEXP, SEXP chrsSEXP, SEXP lociSEXP, SEXP indexSEXP, SEXP lwrSEXP, SEXP uprSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Maps >::type input(inputSEXP);
-    Rcpp::traits::input_parameter< Names >::type snps(snpsSEXP);
-    Rcpp::traits::input_parameter< Spots >::type chrs(chrsSEXP);
-    Rcpp::traits::input_parameter< Map >::type loci(lociSEXP);
-    Rcpp::traits::input_parameter< Spots >::type index(indexSEXP);
-    Rcpp::traits::input_parameter< Spots >::type lwr(lwrSEXP);
-    Rcpp::traits::input_parameter< Spots >::type upr(uprSEXP);
-    rcpp_result_gen = Rcpp::wrap(specie_std_ctor(input, snps, chrs, loci, index, lwr, upr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -273,8 +266,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_isqg_standard_meiosis", (DL_FUNC) &_isqg_standard_meiosis, 0},
     {"_isqg_gamete_ctor", (DL_FUNC) &_isqg_gamete_ctor, 2},
-    {"_isqg_specie_std_ctor", (DL_FUNC) &_isqg_specie_std_ctor, 7},
     {"_isqg_specie_cus_ctor", (DL_FUNC) &_isqg_specie_cus_ctor, 8},
     {"_isqg_specie_get_snps", (DL_FUNC) &_isqg_specie_get_snps, 1},
     {"_isqg_specie_get_chrs", (DL_FUNC) &_isqg_specie_get_chrs, 1},

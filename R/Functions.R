@@ -54,28 +54,40 @@
 ##' spc_standard <- set_specie(ToyMap)
 ##'
 ##' ## generate standard _de novo_ variability
-##' spc_standard$gamete(n = 10)
+##' spc_standard$gamete(n = 100)
 ##'
-##' ## Writing your own meiosis process and using it
 ##' \dontrun{
-##' src <- '
-##' // [[Rcpp::depends(isqg)]]
+##' ## writing your own meiosis process and using it
+##' Meiosis <- '
+##' // [[Rcpp::depends(isqg)]] 
+##' # include <isqg.h> // loading headers of the package
 ##'
-##' # include <isqg.h>
+##' // half w/ crossing at position 1.0
+##' Map meiosis(const double & i, const double & j) {
 ##' 
-##' Map meiosis(double i, double j) { return Map(1, R::runif(0.0, 1.0) > .5 ? 1 : 0) ; }
-##' 
-##' // [[Rcpp::export]]
-##' MPtr myMeiosis() { return MPtr(new FPtr(& meiosis), true) ; }
-##' '
+##'   if (static_cast<bool>(R::rbinom(1.0, 0.5))) {
+##'     return Map() ;
+##'   } else {
+##'     return Map(1, 1.0) ;
+##'   }
 ##'
-##' Rcpp::sourceCpp(code = src, rebuild = TRUE)
-##' spc_custom <- set_specie(ToyMap, meiosis = myMeiosis())
-##'
-##' ## generate custom _de novo_ variability
-##' scp_custom$gamete(n = 10)
 ##' }
+##' 
+##' // wrap the function as external pointer
+##' // [[Rcpp::export]]
+##' MPtr myMeiosis() { return MPtr(new FPtrM(& meiosis), true) ; }
+##' '
+##' 
+##' ## compile the code
+##' Rcpp::sourceCpp(code = Meiosis, rebuild = TRUE)
 ##'
+##' ## define a specie w/ custom meiosis
+##' spp_custom <- set_specie(ToyMap, meiosis = myMeiosis())
+##'
+##' ## check meiosis process
+##' spp_custom$gamete(n = 100)
+##' }
+##' 
 ##' @rdname set_specie
 "set_specie" <- function(data, meiosis = NULL) {                                     
   data_order <- data[order(data$chr, data$pos),]    # reorder data
@@ -90,7 +102,7 @@
   if (class(meiosis) == "externalptr") { # switch custom/standard
     return(.Cpp_Specie_cus_ctor(list_map, snp, chr, pts, pos, lwr, upr, meiosis))
   } else {
-    return(.Cpp_Specie_std_ctor(list_map, snp, chr, pts, pos, lwr, upr))
+    return(.Cpp_Specie_cus_ctor(list_map, snp, chr, pts, pos, lwr, upr, .Cpp_meiosis_standard()))
   }
 }
 

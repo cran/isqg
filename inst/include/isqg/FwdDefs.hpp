@@ -59,9 +59,8 @@ class                                      Chromosome ;
 // runtime polymorphism device to enable user defined meiosis
 class                                      Meiosis ; // abstraction for user defined meiosis
 
-class                                      Standard ; // w/o function definition
-
-typedef Map (* FPtrM) (double, double) ;   // function pointer for user defined function
+ // function pointer for user defined function
+typedef Map (* FPtrM) (const double &, const double &) ;  
 
 typedef Rcpp::XPtr<FPtrM>                  MPtr ; // external/smart pointer for meiosis
 

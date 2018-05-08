@@ -42,6 +42,7 @@
 // standard libraries and others
 # include <string>
 # include <vector>                   
+# include <tuple>
 # include <algorithm>
 # include <iterator>
 # include <RcppCommon.h>             // allows template specializations
@@ -84,10 +85,6 @@ namespace Rcpp {
   
   template <> Trait as(SEXP) ;
   template <> SEXP wrap(const Trait &) ;
-  
-  // for populations [WHAT]
-  // template <> Population as(SEXP) ;
-  // template <> SEXP wrap(const Population & ) ;
 
 }
 
@@ -226,11 +223,6 @@ namespace isqg {
       template <> inline std::string name<Trait>()    { return "Trait" ;            }
       template <> inline std::string pack<Trait>()    { return "isqg" ;             }
       template <> inline std::string make<Trait>()    { return ".R_Trait_ctor" ;    }
-      
-      // for populations [WHAT]
-      // template <> inline std::string name<Population>() {return "Specimen";         }
-      // template <> inline std::string pack<Population>() {return "isqg";             }
-      // template <> inline std::string make<Population>() {return ".R_Specimen_ctor"; }
 
     }
   }
@@ -266,14 +258,6 @@ namespace Rcpp {
   template <> inline Trait as(SEXP obj) {
     return * (isqg::seamless::Trap<Trait>(obj)) ;
   }
-  
-  // for populations [WHAT]
-  // template <> inline SEXP wrap(const Population & pop) {
-  //   return wrap(isqg::seamless::Trap<Population>(pop)) ;
-  // }  
-  // template <> inline Population as(SEXP pop) {
-  //   return *(isqg::seamless::Trap<Population>(pop)) ;
-  // }
 
   // --vectorized--
   namespace traits {

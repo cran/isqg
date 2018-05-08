@@ -36,25 +36,9 @@
 */
 //////////////////////////////////////////////////////////////////////////
 
-// --Rcpp attributes--
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(BH)]]
-
 # include <isqg.h>
 
-// --Chromosome--
-Chromosome::Chromosome(Map input) :
-  
-  length     (input.back()),
-  centromere (length),
-  map        (input),
-  _5p        (map.begin()),
-  _3p        (map.end()),
-  prototype  (map.size()),
-  trigger    (new Standard()) // regular pointer
-
-  { }
-  
+// --Chromosome--  
 Chromosome::Chromosome(Map input, MPtr custom) :
   
   length     (input.back()),
@@ -79,8 +63,9 @@ void Chromosome::meiosis(void) {
 
     // right shift XOR chain -- find interval
     for ( auto && chiasma : chiasmata ) {
+  
       breaks     = std::distance(_5p, std::upper_bound(_5p, _3p, chiasma)) ;
-      prototype ^= Index(map.size()).set() >> breaks ;
+      prototype ^= (Index(map.size()).set() >> breaks) ;
 
     }
   
@@ -91,26 +76,30 @@ void Chromosome::meiosis(void) {
 
 }
 
-// --Standard Meiosis--
-Map Standard::meiosis(const double & length, const double & centromere) { 
-
-  return process(length, centromere) ; 
-
-}
-
 // ref: Karlin & Liberman (1978) [Proc. Natl. Acad. Sci. 75(12):6332--6336]
-Map Standard::process(const double & length, const double & centromere) {
+Map count_location(const double & length, const double & centromere) {
 
   int event(static_cast<int>(R::rpois(length))) ;
-
-  // sugar :)
-  Map chiasmata(Rcpp::as<Map>(Rcpp::runif(event, 0.0, length))) ;     
-    
-  std::sort(chiasmata.begin(), chiasmata.end()) ;
   
-  return chiasmata ;
-
+  if ( event == 0 ) {
+  
+    return Map() ;
+  
+  } else {
+  
+    // sugar :)
+    Map chiasmata(Rcpp::as<Map>(Rcpp::runif(event, 0.0, length))) ;     
+    
+    std::sort(chiasmata.begin(), chiasmata.end()) ;
+  
+    return chiasmata ;
+    
+  }
+  
 }
+
+// [[Rcpp::export(name = .Cpp_meiosis_standard)]]
+MPtr standard_meiosis() { return MPtr(new FPtrM(& count_location), true) ; }
 
 // --Extended Meiosis--
 Map Extended::meiosis(const double & length, const double & centromere) { 
@@ -154,14 +143,6 @@ Codes Catalog::split(Code seq) {
 
 }
 
-// --Genome--
-Genome::Genome(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr) : 
-
-  ensemble  (parser_std(input)), 
-  directory (snps, chrs, loci, index, lwr, upr) 
-  
-  { }
-
 Genome::Genome(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr, MPtr custom) : 
 
   ensemble  (parser_cus(input, custom)),
@@ -175,19 +156,6 @@ Genome::Genome(const Genome & original) :
   directory (original.directory)
   
   { }
-
-Chip Genome::parser_std(Maps input) {
-
-  int size(input.size()) ;
-  
-  Chip information(size) ;
-  
-  for ( auto it = 0; it < size; it++ )
-    information.at(it) = Chromosome(input.at(it)) ;
-  
-  return information ;
-
-}
 
 Chip Genome::parser_cus(Maps input, MPtr custom) {
 
@@ -216,12 +184,6 @@ Gamete Genome::gamete(void) {
 }
 
 // --Specie--
-Specie::Specie(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr) : 
-
-  slot(new Genome(input, snps, chrs, loci, index, lwr, upr), true) 
-  
-  { }
-
 Specie::Specie(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr, MPtr custom) : 
 
   slot(new Genome(input, snps, chrs, loci, index, lwr, upr, custom), true) 
@@ -262,13 +224,6 @@ Codes Specie::gamete(int number) {
 
 // [[Rcpp::export(name = .Cpp_Gamete_ctor)]]
 Codes gamete_ctor(int number, isqg::seamless::Trap<Specie> spc) { return spc->gamete(number) ; }
-
-// [[Rcpp::export(name = .Cpp_Specie_std_ctor)]]
-Specie specie_std_ctor(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr) { 
-
-  return Specie(input, snps, chrs, loci, index, lwr, upr) ; 
-  
-}
 
 // [[Rcpp::export(name = .Cpp_Specie_cus_ctor)]]
 Specie specie_cus_ctor(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr, MPtr custom) { 
@@ -318,6 +273,7 @@ DNA::DNA(Chromosome chromosome, Code genotype) :
       Rcpp::stop("Unable to initialize genotype with the provided code") ;
 
     } 
+    
   }
 
 DNA::DNA(DNA female, DNA male) :
@@ -344,7 +300,7 @@ DNA::DNA(Code cis_seq, Code trans_seq) :
   
   { }
 
-void DNA::meiosis(const Index & prototype) { this -> arrow = prototype ; }
+void DNA::meiosis(const Index & prototype) { arrow = prototype ; } // [change 04/17/2018]
 
 Strand DNA::recombination(void) { return (arrow & cis) | (~arrow & trans) ; }
 

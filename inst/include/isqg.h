@@ -43,6 +43,10 @@
     # error "'Rcpp.h' should not be included. Include only 'isqg.h'."
 # endif
 
+// --Rcpp attributes--
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::depends(BH)]]
+
 # include "isqg/isqg.hpp"
 
 # endif // _ISQG_INTERFACE_H_
