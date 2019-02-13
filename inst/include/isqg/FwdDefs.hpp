@@ -47,6 +47,8 @@ typedef std::vector<double>                Map ;
 
 typedef std::vector<Map>                   Maps ;
 
+typedef std::vector<bool>                  Guides ;
+
 typedef Map::iterator                      Edge ;
 
 // equal to Strand -- kept up just to track/debug
@@ -59,8 +61,8 @@ class                                      Chromosome ;
 // runtime polymorphism device to enable user defined meiosis
 class                                      Meiosis ; // abstraction for user defined meiosis
 
- // function pointer for user defined function
-typedef Map (* FPtrM) (const double &, const double &) ;  
+// function pointer for user defined function
+typedef Map (* FPtrM) (Chromosome *) ;  
 
 typedef Rcpp::XPtr<FPtrM>                  MPtr ; // external/smart pointer for meiosis
 
@@ -86,7 +88,10 @@ typedef Rcpp::XPtr<Genome>                 GPtr ; // external/smart pointer for 
 class                                      Specie ; // slot for GPtr
 
 // equal to Index -- kept up just to track/debug
-typedef boost::dynamic_bitset<>            Strand ; 
+typedef boost::dynamic_bitset<>            Strand ;
+
+// equal to Gamete -- kept up just to track/debug
+typedef std::vector<Strand>                Tape ;
 
 class                                      DNA ;
 
@@ -100,6 +105,7 @@ typedef std::vector<Code>                  Codes ;
 
 typedef std::vector<int>                   Genotype ;
 
+// equal to Strand -- kept up just to track/debug
 typedef std::vector<Index>                 Switcher ;
 
 class                                      Trait ;
@@ -116,6 +122,15 @@ typedef double (* FPtrA) (Specimen) ;      // function pointer for user defined 
 typedef Rcpp::XPtr<FPtrA>                  APtr ; // external/smart pointer for alpha
 
 class                                      Custom ;
+
+// runtime polymorphism device to enable user defined breeding value
+class                                      Node ; // abstraction for pedigree _sifter_
+
+class                                      Proxy ; // switcher/recursion pedigree _sifter_
+
+class                                      Known ;
+
+class                                      Unkown ;
 
 # endif // _FORWARD_ALIAS_HPP_
 

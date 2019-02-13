@@ -46,9 +46,7 @@
 class Chromosome {
 
   // polymorphic meiosis:
-  // friend class Standard ;
   friend class Extended ;
-
   friend class DNA ;  
   friend class Genome ;
   friend class Specimen ;
@@ -58,10 +56,17 @@ public:
   // constructors
   Chromosome(void) { } // needs default !
   Chromosome(Map, MPtr) ;
+
+  // retrievers:
+  double get_length(void) const { return length ; }
+  double get_centromere(void) const { return centromere ; }
+  Map    get_map(void) const { return map ; }  
   
   // meiosis intra chromosome
   void  meiosis(void) ;
   Index gamete(void) { return prototype ; }
+  Map   pseudo_gamete(void) ;
+  Index lazy_gamete(Map, bool) ;
   
 private:
 
@@ -77,7 +82,7 @@ class Meiosis {
 
 public:
 
-  virtual Map meiosis(const double &, const double &) = 0 ; // pure abstract :)
+  virtual Map meiosis(Chromosome *) = 0 ; // pure abstract :)
 
 } ; // Meiosis
 
@@ -87,7 +92,7 @@ public:
 
   Extended(MPtr extension) : process(*(extension)) { }
 
-  Map meiosis(const double &, const double &) ; // custom specialization
+  Map meiosis(Chromosome *) ; // custom specialization
 
 private:
 
@@ -138,6 +143,7 @@ class Genome {
 
   friend class Specimen ;
   friend class Specie ;
+  friend class Proxy ;
   
   // interfaced constructors
   friend Specimen founder (isqg::seamless::Trap<Specie>, Code) ;
@@ -147,10 +153,10 @@ class Genome {
   friend bool operator!=(GPtr, GPtr) ;
   
   // accessors/retrievers
-  friend Names specie_get_snps(isqg::seamless::Trap<Specie>) ;
-  friend Spots specie_get_chrs(isqg::seamless::Trap<Specie>) ;
-  friend Map   specie_get_loci(isqg::seamless::Trap<Specie>) ;  
-  friend Names specimen_get_snps(isqg::seamless::Trap<Specimen>) ;
+  friend Names specie_get_snps   (isqg::seamless::Trap<Specie>) ;
+  friend Spots specie_get_chrs   (isqg::seamless::Trap<Specie>) ;
+  friend Map   specie_get_loci   (isqg::seamless::Trap<Specie>) ;  
+  friend Names specimen_get_snps (isqg::seamless::Trap<Specimen>) ;
 
 public:
 
@@ -160,6 +166,8 @@ public:
  // meiosis inter chromosome -- iterate over chromosomes
  void     meiosis(void) ;
  Gamete   gamete(void)  ;
+ Maps     pseudo_gamete(void) ;
+ Gamete   lazy_gamete(Maps, Guides) ; // sifter
  
  Position search(Code snp) { return directory.search(snp) ; }
 
@@ -180,7 +188,6 @@ public:
   
   Codes gamete(int) ;
  
-  // Position search(Code snp) { return slot->directory.search(snp) ; } 
   Codes split(Code seq)  { return slot->directory.split(seq) ; }
 
   GPtr  slot ;
@@ -210,10 +217,12 @@ public:
   Codes    genotype_cod() ;
 
   // auxiliars 
-  void     flip(void) { cis.flip(); trans.flip() ; } // when mirror
-  Strand   dom(void)  { return  cis &  trans ; }     // AA    (dominant loci)
-  Strand   het(void)  { return  cis ^  trans ; }     // Aa/aA (heterozigous loci)
-  Strand   rec(void)  { return ~cis & ~trans ; }     // aa    (recessive loci)
+  void     flip(void)      { cis.flip(); trans.flip() ; } // when mirror
+  Strand   dom(void)       { return  cis &  trans ; }     // AA    (dominant loci)
+  Strand   het(void)       { return  cis ^  trans ; }     // Aa/aA (heterozigous loci)
+  Strand   rec(void)       { return ~cis & ~trans ; }     // aa    (recessive loci)
+  Strand   get_cis(void)   { return cis ; }               // get cis
+  Strand   get_trans(void) { return cis ; }               // get trans
     
 private:
 
@@ -275,7 +284,8 @@ public:
   Position search(Code snp) { return root->search(snp) ; }
   int      look_num(Code) ;
   Code     look_cod(Code) ;
-  
+  Tape     get_cis(void) ;
+  Tape     get_trans(void) ;
 
  private:
 

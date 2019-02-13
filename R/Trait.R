@@ -92,8 +92,9 @@ NULL
   data_joint <- merge(map, data.frame(snp = genes, add = a, dom = d), 
                       by = 'snp', all = TRUE)
   data_order <- data_joint[order(data_joint$chr, data_joint$pos),]
-  loci <- with(data_order, ifelse(is.na(add), 0, 1))
-  vec_loci <- unname(sapply(split(loci, data_order$chr), paste, collapse = ''))  
+  loci <- with(data_order, ifelse(is.na(add) & is.na(dom), 0, 1))
+  vec_loci <- unname(sapply(split(loci, data_order$chr),
+                            function(x) paste(x, collapse = '')))
   return(.Cpp_trait_infty_ctor(specie, vec_loci, m, a, d))
 }
 
@@ -109,9 +110,10 @@ NULL
   data_joint <- merge(map, data, by = 'snp', all = TRUE)
   data_order <- data_joint[order(data_joint$chr, data_joint$pos),]
   loci <- with(data_order, ifelse(is.na(add) | is.na(dom), 0, 1))
-  add <- with(data_joint, ifelse(is.na(add), 0, add))
-  dom <- with(data_joint, ifelse(is.na(dom), 0, dom))
-  vec_loci <- unname(sapply(split(loci, data_order$chr), paste, collapse = ''))
+  add <- with(data_order, ifelse(is.na(add), 0, add))
+  dom <- with(data_order, ifelse(is.na(dom), 0, dom))
+  vec_loci <- unname(sapply(split(loci, data_order$chr),
+                            function(x) paste(x, collapse = '')))
   vec_add <- unname(lapply(split(add, data_order$chr), rev)) # needs reverse order 
   vec_dom <- unname(lapply(split(dom, data_order$chr), rev)) # idem above
   return(.Cpp_trait_quant_ctor(specie, vec_loci, m, vec_add, vec_dom))

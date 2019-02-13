@@ -1,19 +1,19 @@
 // -*- mode: c++ -*-
 ///////////////////////////////////////////////////////////////////////////
 /*
- This file is part of isqg, a R package for in silico quantitative genetics
+  This file is part of isqg, a R package for in silico quantitative genetics
 
-              Copyright (C) 2018 Fernando H. Toledo CIMMYT
+  Copyright (C) 2018 Fernando H. Toledo CIMMYT
               
- * Filename: Genetics.cpp
+  * Filename: Genetics.cpp
  
- * Description: C++ implementations to be used by isqg R package
+  * Description: C++ implementations to be used by isqg R package
  
- * Author: Fernando H. Toledo
+  * Author: Fernando H. Toledo
  
- * Maintainer: Fernando H. Toledo
+  * Maintainer: Fernando H. Toledo
  
- * Created: Mo Jan 22 2018
+  * Created: Mo Jan 22 2018
  
   This program is free software; you can redistribute it and/or modify 
   it under the terms of the GNU General Public License as published by 
@@ -32,7 +32,7 @@
   `` Far better an approximate answer to the right question, which is 
   often vague, than the exact answer to the wrong question, which can
   always be made precise ''
-                         --John Tukey, Ann. Math. Stat. 33(1):13 1962
+  --John Tukey, Ann. Math. Stat. 33(1):13 1962
 */
 //////////////////////////////////////////////////////////////////////////
 
@@ -49,13 +49,13 @@ Chromosome::Chromosome(Map input, MPtr custom) :
   prototype  (map.size()),
   trigger    (new Extended(custom)) // regular pointer
 
-  { }
+{ }
 
 void Chromosome::meiosis(void) {
 
   prototype.reset() ;
   
-  Map chiasmata(trigger -> meiosis(length, centromere)) ;
+  Map chiasmata(trigger->meiosis(this)) ;
 
   if ( chiasmata.size() > 0 ) { // only if crossing happens
 
@@ -71,13 +71,15 @@ void Chromosome::meiosis(void) {
   
   }
   
-  // raffle w.r.t. reference strand
-  if ( static_cast<bool>(R::rbinom(1.0, 0.5)) ) { prototype.flip() ; }
+  if (static_cast<bool>(R::rbinom(1.0, 0.5))) // raffle w.r.t. reference strand
+    prototype.flip() ;
 
 }
 
 // ref: Karlin & Liberman (1978) [Proc. Natl. Acad. Sci. 75(12):6332--6336]
-Map count_location(const double & length, const double & centromere) {
+Map count_location(Chromosome * chromosome) {
+
+  double length(chromosome->get_length()) ;
 
   int event(static_cast<int>(R::rpois(length))) ;
   
@@ -98,13 +100,40 @@ Map count_location(const double & length, const double & centromere) {
   
 }
 
+Map Chromosome::pseudo_gamete(void) { return trigger->meiosis(this) ; }
+
+Index Chromosome::lazy_gamete(Map chiasmata, bool tape) {
+
+  prototype.reset() ;
+  
+  if ( chiasmata.size() > 0 ) { // only if crossing happens
+  
+    int breaks(0) ; // holds the breaks' distance from _5p
+
+    // right shift XOR chain -- find interval
+    for (auto && chiasma : chiasmata) {
+    
+      breaks     = std::distance(_5p, std::upper_bound(_5p, _3p, chiasma)) ;
+      prototype ^= (Index(map.size()).set() >> breaks) ;
+    
+    }
+  
+  }
+  
+  if (tape) // raffle w.r.t. reference strand
+    prototype.flip() ;
+    
+  return prototype ;
+
+}
+
 // [[Rcpp::export(name = .Cpp_meiosis_standard)]]
 MPtr standard_meiosis() { return MPtr(new FPtrM(& count_location), true) ; }
 
 // --Extended Meiosis--
-Map Extended::meiosis(const double & length, const double & centromere) { 
+Map Extended::meiosis(Chromosome * chromosome) { 
 
-  return process(length, centromere) ;
+  return process(chromosome) ;
 
 }
 
@@ -118,7 +147,7 @@ Catalog::Catalog(Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots
   lower (lwr),
   upper (upr)
 
-  { }
+{ }
   
 Position Catalog::search(Code snp) {
 
@@ -148,14 +177,14 @@ Genome::Genome(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots 
   ensemble  (parser_cus(input, custom)),
   directory (snps, chrs, loci, index, lwr, upr) 
   
-  { }
+{ }
   
 Genome::Genome(const Genome & original) : 
 
   ensemble  (original.ensemble),
   directory (original.directory)
   
-  { }
+{ }
 
 Chip Genome::parser_cus(Maps input, MPtr custom) {
 
@@ -183,12 +212,34 @@ Gamete Genome::gamete(void) {
 
 }
 
+Maps Genome::pseudo_gamete(void) {
+
+  Maps chiasmatas(ensemble.size()) ;
+  
+  for (auto it = 0; it < ensemble.size(); it++)
+    chiasmatas.at(it) = ensemble.at(it).pseudo_gamete() ;
+
+  return chiasmatas ;
+
+}
+
+Gamete Genome::lazy_gamete(Maps points, Guides tapes) {
+
+  Gamete prototypes(ensemble.size()) ;
+  
+  for (auto it = 0; it < ensemble.size(); it++)
+    prototypes.at(it) = ensemble.at(it).lazy_gamete(points.at(it), tapes.at(it)) ;
+    
+  return prototypes ;
+
+}
+
 // --Specie--
 Specie::Specie(Maps input, Names snps, Spots chrs, Map loci, Spots index, Spots lwr, Spots upr, MPtr custom) : 
 
   slot(new Genome(input, snps, chrs, loci, index, lwr, upr, custom), true) 
   
-  { }
+{ }
 
 Codes Specie::gamete(int number) {
 
@@ -246,35 +297,35 @@ DNA::DNA(Chromosome chromosome, Code genotype) :
 
   arrow(Index(chromosome.map.size())) 
   
-  {
+{
 
-    if (genotype == "AA") {
+  if (genotype == "AA") {
 
-      cis   = Strand(chromosome.map.size()).set() ;
-      trans = Strand(chromosome.map.size()).set() ;
+    cis   = Strand(chromosome.map.size()).set() ;
+    trans = Strand(chromosome.map.size()).set() ;
 
-    } else if (genotype == "Aa") {
+  } else if (genotype == "Aa") {
 
-      cis   = Strand(chromosome.map.size()).set() ;
-      trans = Strand(chromosome.map.size()) ;
+    cis   = Strand(chromosome.map.size()).set() ;
+    trans = Strand(chromosome.map.size()) ;
 
-    } else if (genotype == "aA") {
+  } else if (genotype == "aA") {
 
-      cis   = Strand(chromosome.map.size()) ;
-      trans = Strand(chromosome.map.size()).set() ;
+    cis   = Strand(chromosome.map.size()) ;
+    trans = Strand(chromosome.map.size()).set() ;
 
-    } else if (genotype == "aa") {
+  } else if (genotype == "aa") {
 
-      cis   = Strand(chromosome.map.size()) ;
-      trans = Strand(chromosome.map.size()) ;
+    cis   = Strand(chromosome.map.size()) ;
+    trans = Strand(chromosome.map.size()) ;
 
-    } else {
+  } else {
 
-      Rcpp::stop("Unable to initialize genotype with the provided code") ;
+    Rcpp::stop("Unable to initialize genotype with the provided code") ;
 
-    } 
+  } 
     
-  }
+}
 
 DNA::DNA(DNA female, DNA male) :
 
@@ -282,7 +333,7 @@ DNA::DNA(DNA female, DNA male) :
   trans (male.recombination()),
   arrow (female.cis.size())
 
-  { }
+{ }
   
 DNA::DNA(Strand haploid) :
 
@@ -290,7 +341,7 @@ DNA::DNA(Strand haploid) :
   trans (haploid),
   arrow (haploid.size())
   
-  { }
+{ }
   
 DNA::DNA(Code cis_seq, Code trans_seq) :
 
@@ -298,7 +349,7 @@ DNA::DNA(Code cis_seq, Code trans_seq) :
   trans (Index(trans_seq)),
   arrow (Index(cis_seq.size()))
   
-  { }
+{ }
 
 void DNA::meiosis(const Index & prototype) { arrow = prototype ; } // [change 04/17/2018]
 
@@ -336,14 +387,14 @@ Specimen::Specimen(const Specimen & original) :
   root     (original.root),
   nucleous (original.nucleous)
   
-  { }
+{ }
 
 Specimen::Specimen(GPtr origin, Karyotype information) :
 
   root     (origin),
   nucleous (information)
 
-  { }
+{ }
   
 void Specimen::meiosis(void) {
 
@@ -410,6 +461,28 @@ Code Specimen::look_cod(Code snp) {
   bool trans(nucleous.at(std::get<1>(id)).trans[std::get<3>(id)]) ;
     
   return cis && trans ? "1 1" : (!cis && !trans ? "2 2" : (cis ? "1 2" : "2 1")) ;
+
+}
+
+Tape Specimen::get_cis(void) {
+
+  Tape cis(nucleous.size()) ;
+  
+  for (auto it = 0; it < nucleous.size(); it++)
+    cis.at(it) = nucleous.at(it).get_cis() ;
+    
+  return cis ;
+
+}
+
+Tape Specimen::get_trans(void) {
+
+  Tape trans(nucleous.size()) ;
+  
+  for (auto it = 0; it < nucleous.size(); it++)
+    trans.at(it) = nucleous.at(it).get_trans() ;
+    
+  return trans ;
 
 }
 

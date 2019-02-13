@@ -63,6 +63,7 @@ namespace isqg {
 # include <isqg/FwdDefs.hpp>
 # include <isqg/FwdFuncs.hpp>
 # include <isqg/Genetics.hpp>
+# include <isqg/Sifter.hpp>
 
 // took from Extending Rcpp 
 // non-intrusive extensions via template specialization declarations
@@ -161,9 +162,9 @@ namespace isqg {
       Trap(const R6 & obj) : ptr(new R6(obj), true) { }
 
       // operators
-             R6 & operator*  ()  const { return * ptr ;       }    
-             R6 * operator-> ()  const { return & (* ptr) ;   }
-      inline     operator R6*()        { return (R6 *)(ptr) ; }
+             R6 & operator*   ()  const { return * ptr ;       }    
+             R6 * operator->  ()  const { return & (* ptr) ;   }
+      inline      operator R6*()        { return (R6 *)(ptr) ; }
 
       // Convert from an R object from R
       static Rcpp::XPtr<R6> R2Cpp(Rcpp::RObject obj) {

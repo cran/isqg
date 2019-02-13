@@ -27,27 +27,33 @@ spc_standard <- set_specie(ToyMap)
 spc_standard$gamete(n = 100)
 
 \dontrun{
-## writing your own meiosis process and using it
-Meiosis <- '
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(BH, isqg)]] 
+## write your function is C++ and then wrap it as a pointer
+Meiosis <- "
+// [[Rcpp::depends(isqg)]]
+
 # include <isqg.h> // loading headers of the package
+# include <vector>
+# include <algorithm>
 
-// half w/ crossing at position 1.0
-Map meiosis(const double & i, const double & j) {
+// NOTE:
+// loci are independent to each other
+Map meiosis(Chromosome * group) {
 
-  if (static_cast<bool>(R::rbinom(1.0, 0.5))) {
-    return Map() ;
-  } else {
-    return Map(1, 1.0) ;
-  }
+  Map map(group->get_map()) ;
+
+  for (auto it = 0; it < map.size(); it++)
+    if (static_cast<bool>(R::rbinom(1., .5))) map.at(it) = 2. + 1. ;
+
+  map.erase(std::remove(map.begin(), map.end(), 2. + 1.), map.end());
+
+  return map ;
 
 }
 
 // wrap the function as external pointer
 // [[Rcpp::export]]
 MPtr myMeiosis() { return MPtr(new FPtrM(& meiosis), true) ; }
-'
+"
 
 ## compile the code
 Rcpp::sourceCpp(code = Meiosis, rebuild = TRUE)
