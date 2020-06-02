@@ -1,19 +1,17 @@
 // -*- mode: c++ -*-
 ///////////////////////////////////////////////////////////////////////////
 /*
- This file is part of isqg, a R package for in silico quantitative genetics
+ Sample extention for isqg: a R package for in silico quantitative genetics
 
-              Copyright (C) 2018 Fernando H. Toledo CIMMYT
+              Copyright (C) 2019 Fernando H. Toledo CIMMYT
               
- * Filename: isqg.h
+ * Filename: Independent.cpp
  
- * Description: exposed C++ infrastructure of isqg package
+ * Description: extension of meiosis recombination for independent events
  
  * Author: Fernando H. Toledo
  
- * Maintainer: Fernando H. Toledo
- 
- * Created: Fr Mar 09 2018
+ * Created: Tue Dec 3 2019
  
   This program is free software; you can redistribute it and/or modify 
   it under the terms of the GNU General Public License as published by 
@@ -36,20 +34,35 @@
 */
 ///////////////////////////////////////////////////////////////////////////
 
-# ifndef _ISQG_INTERFACE_H_
-# define _ISQG_INTERFACE_H_
+// [[Rcpp::depends(isqg)]] // RCPP attribute
 
-# if defined(Rcpp_hpp)
-    # error "'Rcpp.h' should not be included. Include only 'isqg.h'."
-# endif
+// loading headers
+# include <isqg.h>    // from the "isqg" package
+# include <vector>    // support for vectors from standard template library
+# include <algorithm> // support for algorithms from standard template library
 
-// --Rcpp attributes--
-// [[Rcpp::plugins(cpp14)]]
-// [[Rcpp::depends(BH)]]
+// function to define the custom recombination process
+Map indep(Chromosome * group) {
 
-# include "isqg/isqg.hpp"
+  // retrieve the map of the chromosome  
+  Map map(group->get_map()) ;
 
-# endif // _ISQG_INTERFACE_H_
+  // loop over all positions of the map and... 
+  // raffle (Bernoulli draw) if each position will recombine or not
+  for (auto it = 0; it < map.size(); it++)
+    if (static_cast<bool>(R::rbinom(1., .5))) map.at(it) = 2. + 1. ;
+
+  // remove any contiguous positions where recombination happened
+  map.erase(std::remove(map.begin(), map.end(), 2. + 1.), map.end()) ;
+
+  // return the recombination positions
+  return map ; 
+  
+}
+
+// wrap the function as a "smart" external pointer
+// [[Rcpp::export]] // RCPP attribute
+MPtr indepp() { return MPtr(new FPtrM(& indep), true) ; }
 
 // \EOF
 ///////////////////////////////////////////////////////////////////////////

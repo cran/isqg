@@ -37,6 +37,7 @@
 
 ## replaces: loadModule(module = "ISQG", what = TRUE)
 .onUnload <- function (libpath) {
+  gc()
   library.dynam.unload("isqg", libpath)
 }
 

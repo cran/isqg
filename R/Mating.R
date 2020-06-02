@@ -80,31 +80,28 @@
 NULL
 
 ##' @export
-##' @inheritParams mating
 ##' @rdname Mating
 'cross' <- function(n = 1, p1, p2) {
   progeny <- .Cpp_cross_ctor(n, p1, p2)
-  names(progeny) <- paste0(substitute(p1), "_x_", substitute(p2), "_n_", 1:n)
+  ## names(progeny) <- paste0(substitute(p1), "_x_", substitute(p2), "_n_", 1:n)
   if(n == 1) progeny <- progeny[[1]]
   return(progeny)
 }
 
 ##' @export
-##' @inheritParams mating
 ##' @rdname Mating
 'selfcross' <- function(n = 1, gid) {
   progeny <- .Cpp_selfcross_ctor(n, gid)
-  names(progeny) <- paste0(substitute(gid), "_s_n_", 1:n)
+  ## names(progeny) <- paste0(substitute(gid), "_s_n_", 1:n)
   if(n == 1) progeny <- progeny[[1]]
   return(progeny)
 }
 
 ##' @export
-##' @inheritParams mating
 ##' @rdname Mating
 'dh' <- function(n = 1, gid) {
   progeny <- .Cpp_doublehaploid_ctor(n, gid)
-  names(progeny) <- paste0(substitute(gid), "_d_n_", 1:n)
+  ## names(progeny) <- paste0(substitute(gid), "_d_n_", 1:n)
   if(n == 1) progeny <- progeny[[1]]
   return(progeny)
 }

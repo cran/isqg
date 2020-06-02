@@ -40,14 +40,16 @@
 # define _HEADERS_H_
 
 // standard libraries and others
-# include <string>
-# include <vector>                   
-# include <tuple>
-# include <algorithm>
-# include <iterator>
-# include <RcppCommon.h>             // allows template specializations
-# include <Rcpp/XPtr.h>              // smart external pointers
-# include <boost/dynamic_bitset.hpp> // runtime allocated bitsets
+# include <string>                               // text strings
+# include <vector>                               // standard arrays
+# include <tuple>                                // data structure
+# include <algorithm>                            // standard algorithms
+# include <iterator>                             // standard iterators
+# include <RcppCommon.h>                         // allows template specializations
+# include <Rcpp/XPtr.h>                          // smart external pointers
+# include <boost/dynamic_bitset.hpp>             // runtime allocated bitsets
+# include <boost/graph/adjacency_list.hpp>       // direct acyclic graphs
+# include <boost/graph/breadth_first_search.hpp> // traverse graphs
 
 // borrowed from glmmsr/RcppR6
 // namespace scope for interface declaration
@@ -63,7 +65,6 @@ namespace isqg {
 # include <isqg/FwdDefs.hpp>
 # include <isqg/FwdFuncs.hpp>
 # include <isqg/Genetics.hpp>
-# include <isqg/Sifter.hpp>
 
 // took from Extending Rcpp 
 // non-intrusive extensions via template specialization declarations
@@ -182,7 +183,7 @@ namespace isqg {
 
           Rcpp::stop("Expected an object of type " + traits::name<R6>()) ;
 
-          return Rcpp::as<Rcpp::XPtr<R6> >(obj) ; // do not apply
+          return Rcpp::as<Rcpp::XPtr<R6>>(obj) ; // do not apply
 
         }
       }

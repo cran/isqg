@@ -121,16 +121,7 @@ typedef double (* FPtrA) (Specimen) ;      // function pointer for user defined 
 
 typedef Rcpp::XPtr<FPtrA>                  APtr ; // external/smart pointer for alpha
 
-class                                      Custom ;
-
-// runtime polymorphism device to enable user defined breeding value
-class                                      Node ; // abstraction for pedigree _sifter_
-
-class                                      Proxy ; // switcher/recursion pedigree _sifter_
-
-class                                      Known ;
-
-class                                      Unkown ;
+class                                      Custom ; // [[TODO]]
 
 # endif // _FORWARD_ALIAS_HPP_
 

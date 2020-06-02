@@ -8,7 +8,11 @@
 \description{
 \code{isqg} provides R6/C++ classes for in silico quantitative 
     genetics. Mimic the meiosis recombination. Allows user defined extensions 
-    which provides great flexibility.
+    which provides great flexibility. Details of the implementation are described 
+    in \insertCite{g3;textual}{isqg}.
+}
+\references{
+\insertAllCited{}
 }
 \author{
 Fernando H. Toledo \email{f.toledo@cgiar.org}

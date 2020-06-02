@@ -77,7 +77,6 @@
 NULL
 
 ##' @export
-##' @inheritParams fitness
 ##' @rdname fitness
 "set_infty" <- function(specie, m = 0, a = 1, d = 0, genes = NULL) {
   if (all(c(is.null(a), is.null(d))))
@@ -99,7 +98,6 @@ NULL
 }
 
 ##' @export
-##' @inheritParams fitness
 ##' @rdname fitness
 "set_quant" <- function(specie, m, data) {
   if (!all(c('snp', 'add', 'dom') %in% names(data)))

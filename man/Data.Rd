@@ -4,7 +4,9 @@
 \name{ToyMap}
 \alias{ToyMap}
 \title{Toy Example of a Map for \emph{in silico} Quantitative Genetics}
-\format{a data.frame, 42 rows and 3 collumns (snp, chr, pos).}
+\format{
+a data.frame, 42 rows and 3 collumns (snp, chr, pos).
+}
 \usage{
 data(ToyMap)
 }

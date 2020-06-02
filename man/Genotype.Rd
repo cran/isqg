@@ -2,7 +2,7 @@
 % Please edit documentation in R/Functions.R
 \name{genotype}
 \alias{genotype}
-\title{Codify Specimens' Genotypes}
+\title{Codify Specimens' Genotypes.}
 \usage{
 genotype(pop, phase = FALSE)
 }
