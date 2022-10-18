@@ -15,8 +15,8 @@ import(specie, genotype)
 Objects of R6 class with methods to mimic in silico Specimens.
 }
 \description{
-Constructor of instances of the Specimen class given the Specie 
-    from which the individual will belong where the loci will equal to the 
+Constructor of instances of the Specimen class given the Specie
+    from which the individual will belong where the loci will equal to the
     provided genotype from two strings one for each homologous.
 }
 \examples{

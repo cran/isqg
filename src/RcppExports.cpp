@@ -209,6 +209,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bar
+int bar(std::vector<int> p, std::vector<int> i, std::vector<int> j, SEXP s);
+RcppExport SEXP _isqg_bar(SEXP pSEXP, SEXP iSEXP, SEXP jSEXP, SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type i(iSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type j(jSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(bar(p, i, j, s));
+    return rcpp_result_gen;
+END_RCPP
+}
+// foo
+int foo(int i);
+RcppExport SEXP _isqg_foo(SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(foo(i));
+    return rcpp_result_gen;
+END_RCPP
+}
 // trait_infty_ctor
 Trait trait_infty_ctor(isqg::seamless::Trap<Specie> origin, Codes loci, double mu, double add, double dom);
 RcppExport SEXP _isqg_trait_infty_ctor(SEXP originSEXP, SEXP lociSEXP, SEXP muSEXP, SEXP addSEXP, SEXP domSEXP) {
@@ -283,6 +308,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_isqg_cross", (DL_FUNC) &_isqg_cross, 3},
     {"_isqg_self", (DL_FUNC) &_isqg_self, 2},
     {"_isqg_dh", (DL_FUNC) &_isqg_dh, 2},
+    {"_isqg_bar", (DL_FUNC) &_isqg_bar, 4},
+    {"_isqg_foo", (DL_FUNC) &_isqg_foo, 1},
     {"_isqg_trait_infty_ctor", (DL_FUNC) &_isqg_trait_infty_ctor, 5},
     {"_isqg_trait_quant_ctor", (DL_FUNC) &_isqg_trait_quant_ctor, 5},
     {"_isqg_trait_custm_ctor", (DL_FUNC) &_isqg_trait_custm_ctor, 3},

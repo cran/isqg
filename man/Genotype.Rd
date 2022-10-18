@@ -28,7 +28,7 @@ aA <- spc$founder("aA")
 Both <- list(Aa = Aa, aA = aA)
 
 ## different ways
-genotype(Both)               # as numeric   
+genotype(Both)               # as numeric
 genotype(Both, phase = TRUE) # as character
 
 }

@@ -35,6 +35,7 @@
 ##
 ###########################################################################
 
+##' @importFrom methods is
 ##' @importFrom Rcpp evalCpp
 ##' @importFrom R6 R6Class
 ##' @importFrom Rdpack reprompt

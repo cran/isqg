@@ -360,7 +360,7 @@ Genotype DNA::genotype_num() {
   Genotype genotype(cis.size()) ;
   
   for (auto it = 0; it < cis.size(); it++)
-    genotype[it] = cis[it] & trans[it] ? 1 : (cis[it] ^ trans[it] ? 0 : -1) ;
+    genotype[it] = ((cis[it] && trans[it]) ? 1 : ((cis[it] ^ trans[it]) ? 0 : -1)) ;
 
   std::reverse(genotype.begin(), genotype.end()) ;
 
@@ -373,7 +373,7 @@ Codes DNA::genotype_cod() {
   Codes genotype(cis.size()) ;
   
   for (auto it = 0; it < cis.size(); it++)
-    genotype[it] = cis[it] & trans[it] ? "1 1" : (~cis[it] & ~trans[it] ? "2 2" : (cis[it] & 1 ? "1 2" : "2 1")) ;
+    genotype[it] = ((cis[it] && trans[it]) ? "1 1" : ((~cis[it] && ~trans[it]) ? "2 2" : ((cis[it] && 1) ? "1 2" : "2 1"))) ;
     
   std::reverse(genotype.begin(), genotype.end()) ;
     
@@ -449,7 +449,7 @@ int Specimen::look_num(Code snp) {
   bool cis(nucleous.at(std::get<1>(id)).cis[std::get<3>(id)]) ;
   bool trans(nucleous.at(std::get<1>(id)).trans[std::get<3>(id)]) ;
   
-  return cis && trans ? 1 : (cis != trans ? 0 : -1) ;
+  return ((cis && trans) ? 1 : ((cis != trans) ? 0 : -1)) ;
 
 }
 
@@ -460,7 +460,7 @@ Code Specimen::look_cod(Code snp) {
   bool cis(nucleous.at(std::get<1>(id)).cis[std::get<3>(id)]) ;
   bool trans(nucleous.at(std::get<1>(id)).trans[std::get<3>(id)]) ;
     
-  return cis && trans ? "1 1" : (!cis && !trans ? "2 2" : (cis ? "1 2" : "2 1")) ;
+  return ((cis && trans) ? "1 1" : ((!cis && !trans) ? "2 2" : (cis ? "1 2" : "2 1"))) ;
 
 }
 

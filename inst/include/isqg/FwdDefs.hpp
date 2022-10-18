@@ -123,6 +123,30 @@ typedef Rcpp::XPtr<FPtrA>                  APtr ; // external/smart pointer for 
 
 class                                      Custom ; // [[TODO]]
 
+// WORKING:
+
+
+class Node ;
+
+class Policy ;
+
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, Node, int, boost::no_property> DAG ;
+
+typedef boost::graph_traits<DAG>::vertex_descriptor Gds ;
+
+typedef boost::graph_traits<DAG>::edge_descriptor Kds ;
+
+/*
+// runtime polymorphism device to enable user defined pedigrees
+class                                      Node ; // abstraction for pedigree _sifter_
+
+class                                      Proxy ; // switcher/recursion pedigree _sifter_
+
+class                                      Known ;
+
+class                                      Unkown ;
+*/
+
 # endif // _FORWARD_ALIAS_HPP_
 
 // \EOF

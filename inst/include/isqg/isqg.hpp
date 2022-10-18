@@ -65,6 +65,7 @@ namespace isqg {
 # include <isqg/FwdDefs.hpp>
 # include <isqg/FwdFuncs.hpp>
 # include <isqg/Genetics.hpp>
+# include <isqg/Sifter.hpp>
 
 // took from Extending Rcpp 
 // non-intrusive extensions via template specialization declarations

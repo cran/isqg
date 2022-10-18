@@ -16,13 +16,13 @@ founder(specie, code)
 Objects of R6 class with methods to mimic in silico Specimens.
 }
 \description{
-Constructor of instances of the Specimen class given the Specie 
-    from which the individual will belong where all loci will equal to the 
+Constructor of instances of the Specimen class given the Specie
+    from which the individual will belong where all loci will equal to the
     provided genotype.
 }
 \details{
-Genotypes can be coded as \strong{AA}, \strong{Aa}, \strong{aA} or 
-    \strong{aa}, that meant to represent both homozigous (\strong{AA} and 
+Genotypes can be coded as \strong{AA}, \strong{Aa}, \strong{aA} or
+    \strong{aa}, that meant to represent both homozigous (\strong{AA} and
     \strong{aa}) as well as both heterozigous (\strong{Aa} and \strong{aA}).
 }
 \examples{

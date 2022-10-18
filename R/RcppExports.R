@@ -69,6 +69,14 @@
     .Call('_isqg_dh', PACKAGE = 'isqg', number, individual)
 }
 
+.bar <- function(p, i, j, s) {
+    .Call('_isqg_bar', PACKAGE = 'isqg', p, i, j, s)
+}
+
+.foo <- function(i) {
+    .Call('_isqg_foo', PACKAGE = 'isqg', i)
+}
+
 .Cpp_trait_infty_ctor <- function(origin, loci, mu, add, dom) {
     .Call('_isqg_trait_infty_ctor', PACKAGE = 'isqg', origin, loci, mu, add, dom)
 }
